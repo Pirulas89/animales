@@ -1,21 +1,22 @@
 package com.hibernate.model;
 
 import java.util.List;
-import jakarta.persistence.JoinColumn;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "Animal")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true) // Solo usa lo que marquemos
@@ -53,22 +55,30 @@ public class Animal {
 	@Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
 	private String raza;
 	
-	 @jakarta.persistence.Lob
-	 @Column(name = "foto", columnDefinition = "LONGBLOB") // LONGBLOB para MySQL
-	 private byte[] foto;
+	// @jakarta.persistence.Lob
+	 //@Column(name = "foto", columnDefinition = "LONGBLOB") // LONGBLOB para MySQL
+	// private byte[] foto;
+	 
+	 @Column(name = "foto")
+	 @NotBlank(message = "El url no puede estar vacío")
+	@Size(min = 3, message = "El url debe tener al menos 3 caracteres")// LONGBLOB para MySQL
+	 private String foto;
     
     
-    @Column(columnDefinition = "ENUM('Disponible', 'Adoptado', 'En Tratamiento')")
+	 
+	 @Column(name = "estado")
+	 @NotBlank(message = "El estado no puede estar vacío")
+	@Size(min = 3, message = "El estado debe tener al menos 3 caracteres")// LONGBLOB para MySQL
     private String estado;
 
     // Relación con Medicinas (Tabla intermedia Animal_Medicina)
-    @ToString.Exclude // Evita bucle infinito en el log
-    @EqualsAndHashCode.Exclude // Evita bucle infinito en comparaciones
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-        name = "Animal_Medicina",
-        joinColumns = @JoinColumn(name = "id_animal"), // Verifica que el nombre en la BD sea exacto
-        inverseJoinColumns = @JoinColumn(name = "id_medicina")
-    )
-    private List<Medicina> medicinas;
+	// Dentro de Animal.java
+
+	// Elimina el antiguo @ManyToMany y cámbialo por esto:
+	@OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	private List<Tratamiento> tratamientos;
+
+	
 }
