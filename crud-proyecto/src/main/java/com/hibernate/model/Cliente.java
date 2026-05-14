@@ -1,48 +1,71 @@
 package com.hibernate.model;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "Cliente")
 public class Cliente {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@EqualsAndHashCode.Include
     private int id;
-    
-    @Column(name = "nombre")
-	@NotBlank(message = "El nombre no puede estar vacío")
-	@Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
+
+    @NotBlank(message = "El nombre es obligatorio")
+    @Pattern(regexp = "[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+", message = "El nombre solo puede contener letras y espacios")
     private String nombre;
-    
-    @Column(name = "dni")
-	@NotBlank(message = "El dni no puede estar vacío")
-	@Size(min = 3, message = "El dni debe tener al menos 3 caracteres")
+
+    @NotBlank(message = "El DNI es obligatorio")
+    @Pattern(regexp = "\\d{8}[A-Za-z]", message = "El DNI debe tener 8 números y una letra")
     private String dni;
-    
-    @Column(name = "telefono")
-	@Min(value = 0, message = "El telefono no puede ser negativo")
-	@Max(value = 30, message = "Telefono no válido")
-    private int telefono;
-    
-    @Column(name = "gmail")
-	@NotBlank(message = "El gmail no puede estar vacío")
-	@Size(min = 3, message = "El gmail debe tener al menos 3 caracteres")
-    private String gmail; 
+
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "[679]\\d{8}", message = "El teléfono debe tener 9 dígitos y empezar por 6, 7 o 9")
+    private String telefono;
+
+    @NotBlank(message = "El email es obligatorio")
+    @Pattern(regexp = "^[\\w.+\\-]+@[a-zA-Z0-9\\-]+\\.(com|es)$", message = "El email debe terminar en .com o .es")
+    private String gmail;
+
+    @NotBlank(message = "La calle es obligatoria")
+    private String calle;
+
+    @NotBlank(message = "El número es obligatorio")
+    @Pattern(regexp = "\\d+", message = "El número de calle solo puede contener dígitos")
+    private String numero;
+
+    @NotBlank(message = "La ciudad es obligatoria")
+    @Pattern(regexp = "[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ ]+", message = "La ciudad solo puede contener letras y espacios")
+    private String ciudad;
+
+    @NotBlank(message = "El CP es obligatorio")
+    @Pattern(regexp = "\\d{5}", message = "El código postal debe tener exactamente 5 dígitos")
+    private String cp;
+
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }

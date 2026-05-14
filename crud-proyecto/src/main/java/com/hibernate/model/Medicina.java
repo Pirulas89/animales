@@ -1,62 +1,60 @@
 package com.hibernate.model;
 
-
 import java.util.List;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 
- 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "Medicina")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Solo usa lo que marquemos
 public class Medicina {
 
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private int id;
-	
-	@Column(name = "nombre")
-	@NotBlank(message = "El nombre no puede estar vacío")
-	@Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
-    private String nombre;
-	
-	@Column(name = "descripcion")
-	@NotBlank(message = "La descripcion no puede estar vacía")
-	@Size(min = 3, message = "La descripcion debe tener al menos 3 caracteres")
-    private String descripcion;
-	
-	@Column(name = "tipoMed")
-	@NotBlank(message = "El tipo de medicamento no puede estar vacía")
-	@Size(min = 3, max = 255, message = "La descripcion debe tener al menos 3 caracteres y maximo 255")
-    private String tipoMed;
-	
-  
-	// Dentro de Medicina.java
 
-	// Elimina el antiguo @ManyToMany(mappedBy = "medicinas") y cámbialo por:
-	@OneToMany(mappedBy = "medicina")
-	@ToString.Exclude
-	@EqualsAndHashCode.Exclude
-	private List<Tratamiento> tratamientos;
-   
+    @NotBlank(message = "El nombre del medicamento no puede estar vacío")
+    @Size(max = 40, message = "El nombre no puede superar los 40 caracteres")
+    private String nombre;
+
+    @NotBlank(message = "El tipo no puede estar vacío")
+    @Size(max = 30, message = "El tipo no puede superar los 30 caracteres")
+    private String tipoMed;
+
+    @NotBlank(message = "La descripción no puede estar vacía")
+    @Size(max = 500, message = "La descripción no puede superar los 500 caracteres")
+    private String descripcion;
+
+    @Min(value = 0, message = "El stock no puede ser negativo")
+    @Max(value = 50, message = "El stock no puede superar las 50 unidades")
+    private int stock;
+
+    @ManyToMany(mappedBy = "medicinas", fetch = FetchType.LAZY)
+    private List<Animal> animales;
+
+    @Override
+    public String toString() {
+        return nombre + " (" + tipoMed + ")";
+    }
 }
