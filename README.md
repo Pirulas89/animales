@@ -1,1 +1,1 @@
-en este repositorio esta el zip completo y final y el diagrama de ghantt
+en este repositorio esta el zip completo y final, el diagrama de ghantt y lo demas
